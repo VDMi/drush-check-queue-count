@@ -70,7 +70,7 @@ function drush_check_queue_count($queue_name = null) {
     if ($return > 0) {
       drush_set_error($return, $return_message);
     } else {
-      drush_log($return_message);
+      drush_log($return_message, 'ok');
     }
   } else {
     drush_set_error(OTHER_ERROR, 'There was no result returned.');
