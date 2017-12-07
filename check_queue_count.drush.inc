@@ -56,19 +56,20 @@ function drush_check_queue_count($queue_name = null) {
     $result = $query->execute();
   }
 
+  $warning_levels = sprintf('(w: %d, c: %d, doubles: $s)', $warning_count, $error_count, ($doubles ? 'true' : 'false'));
   if ($result) {
     $result_assoc = $query->fetchAssoc();
     $count = (int)$result_assoc['count'];
 
     $return = 0;
-    $return_message = 'The queue size looks OK.';
+    $return_message = 'The queue size looks OK. ' . $warning_levels;
     if ($count >= $warning_count) {
       $return = 1;
-      $return_message = 'WARNING. The queue size is getting large.';
+      $return_message = 'WARNING. The queue size is getting large. ' . $warning_levels;
     }
     if ($count >= $error_count) {
       $return = 2;
-      $return_message = 'CRITICAL. The queue size is to big.';
+      $return_message = 'CRITICAL. The queue size is to big. ' . $warning_levels;
     }
 
     if ($return > 0) {
