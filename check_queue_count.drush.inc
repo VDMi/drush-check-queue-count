@@ -21,7 +21,7 @@ function check_queue_count_drush_command() {
 }
 
 /**
- * Callback for the drush-demo-command command
+ * Callback for the drush-queue-count command.
  *
  * @see drush_return_status().
  * @see drush_set_error().
