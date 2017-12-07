@@ -30,9 +30,9 @@ function check_queue_count_drush_command() {
  * @see drush_set_error().
  */
 function drush_check_queue_count($queue_name = null) {
-  $warning_count = (int) drush_get_option('w', 100);
-  $error_count_inital = (int) drush_get_option('c', 200);
-  $error_count = (int) drush_get_option('c', 200);
+  $warning_count = (int) drush_get_option('warning', 100);
+  $error_count_inital = (int) drush_get_option('critical', 200);
+  $error_count = (int) drush_get_option('critical', 200);
   $doubles = drush_get_option('doubles', false) ? true : false;
 
   if ($warning_count > $error_count) {
