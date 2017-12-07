@@ -1,5 +1,6 @@
 <?php
 define('OTHER_ERROR', 3);
+define('STATUS_OK', 0);
 
 /**
  * Implements hook_drush_command().
@@ -69,7 +70,7 @@ function drush_check_queue_count($queue_name = null) {
     if ($return > 0) {
       drush_set_error($return, $return_message);
     } else {
-      drush_log($return_message, LogLevel::OK);
+      drush_log($return_message, STATUS_OK);
     }
   } else {
     drush_set_error(OTHER_ERROR, 'There was no result returned.');
