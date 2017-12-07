@@ -14,8 +14,8 @@ function check_queue_count_drush_command() {
       'queue' => 'The name of the queue you want to get a status about.'
     ),
     'options' => array(
-      'w' => 'The warning level (--w=1000). If queue item count is equal or higher then WARNING status.',
-      'c' => 'The critical level (--c=1000). If queue item count is equal or higher then CRITICAL status.',
+      'warning' => 'The warning level (--w=1000). If queue item count is equal or higher then WARNING status.',
+      'critical' => 'The critical level (--c=1000). If queue item count is equal or higher then CRITICAL status.',
       'doubles' => 'Specified to enable a check on double items',
     )
   );
