@@ -18,6 +18,9 @@ function check_queue_count_drush_command() {
 
 /**
  * Callback for the drush-demo-command command
+ *
+ * @see drush_return_status().
+ * @see drush_set_error().
  */
 function drush_check_queue_count($queue_name = null) {
   $warning_count = 100;
@@ -35,12 +38,19 @@ function drush_check_queue_count($queue_name = null) {
   $count = (int)$result_assoc['count'];
 
   $return = 0;
+  $return_message = 'The queue size looks OK.';
   if ($count >= $warning_count) {
     $return = 1;
+    $return_message = 'WARNING. The queue size is getting large.';
   }
   if ($count >= $error_count) {
     $return = 2;
+    $return_message = 'CRITICAL. The queue size is to big.';
   }
 
-  exit($return);
+  if ($return > 0) {
+    drush_set_error($return, $return_message);
+  } else {
+    drush_log($return_message, LogLevel::OK);
+  }
 }
