@@ -1,4 +1,5 @@
 <?php
+define('OTHER_ERROR', 3);
 
 /**
  * Implements hook_drush_command().
@@ -13,7 +14,8 @@ function check_queue_count_drush_command() {
     ),
     'options' => array(
       'w' => 'The warning level. If queue item count is equal or higher then WARNING status.',
-      'c' => 'The critical level. If queue item count is equal or higher then CRITICAL status.'
+      'c' => 'The critical level. If queue item count is equal or higher then CRITICAL status.',
+      'doubles' => 'Specified to enable a check on double items',
     )
   );
 
@@ -29,32 +31,48 @@ function check_queue_count_drush_command() {
 function drush_check_queue_count($queue_name = null) {
   $warning_count = (int) drush_get_option('w', 100);
   $error_count = (int) drush_get_option('c', 200);
+  $doubles = drush_get_option('doubles', false) ? true : false;
 
+  $query = null;
   if (!empty($queue_name)) {
     $query = db_query("SELECT count(*) AS count FROM {queue} WHERE name = ':name'", array(':name' => $queue_name));
-    $result = $query->execute();
   } else {
     $query = db_query("SELECT count(*) AS count FROM {queue}");
+  }
+  if ($doubles) {
+    if (!empty($queue_name)) {
+      $query = db_query("SELECT count(*) AS count FROM {queue} WHERE name = ':name' GROUP BY name, data", array(':name' => $queue_name));
+    } else {
+      $query = db_query("SELECT count(*) AS count FROM {queue} GROUP BY name, data");
+    }
+  }
+
+  if (!empty($query)) {
     $result = $query->execute();
   }
 
-  $result_assoc = $query->fetchAssoc();
-  $count = (int)$result_assoc['count'];
+  if ($result) {
+    $result_assoc = $query->fetchAssoc();
+    $count = (int)$result_assoc['count'];
 
-  $return = 0;
-  $return_message = 'The queue size looks OK.';
-  if ($count >= $warning_count) {
-    $return = 1;
-    $return_message = 'WARNING. The queue size is getting large.';
-  }
-  if ($count >= $error_count) {
-    $return = 2;
-    $return_message = 'CRITICAL. The queue size is to big.';
-  }
+    $return = 0;
+    $return_message = 'The queue size looks OK.';
+    if ($count >= $warning_count) {
+      $return = 1;
+      $return_message = 'WARNING. The queue size is getting large.';
+    }
+    if ($count >= $error_count) {
+      $return = 2;
+      $return_message = 'CRITICAL. The queue size is to big.';
+    }
 
-  if ($return > 0) {
-    drush_set_error($return, $return_message);
+    if ($return > 0) {
+      drush_set_error($return, $return_message);
+    } else {
+      drush_log($return_message, LogLevel::OK);
+    }
   } else {
-    drush_log($return_message, LogLevel::OK);
+    drush_set_error(OTHER_ERROR, 'There was no result returned.');
   }
+
 }
