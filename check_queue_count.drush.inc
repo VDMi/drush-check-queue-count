@@ -10,6 +10,10 @@ function check_queue_count_drush_command() {
     'aliases' => array('cqc'),
     'arguments' => array(
       'queue' => 'The name of the queue you want to get a status about.'
+    ),
+    'options' => array(
+      'w' => 'The warning level. If queue item count is equal or higher then WARNING status.',
+      'c' => 'The critical level. If queue item count is equal or higher then CRITICAL status.'
     )
   );
 
@@ -23,8 +27,8 @@ function check_queue_count_drush_command() {
  * @see drush_set_error().
  */
 function drush_check_queue_count($queue_name = null) {
-  $warning_count = 100;
-  $error_count = 200;
+  $warning_count = (int) drush_get_option('w', 100);
+  $error_count = (int) drush_get_option('c', 200);
 
   if (!empty($queue_name)) {
     $query = db_query("SELECT count(*) AS count FROM {queue} WHERE name = ':name'", array(':name' => $queue_name));
